@@ -1,23 +1,35 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useEffect, useState } from "react";
+import {auth, provider} from "./firebase.config";
+import {signInWithPopup} from "firebase/auth";
+import HomePage from './components/HomePage/HomePage';
+
+
 
 function App() {
+
+
+  const [value, setValue]= useState('');
+  const handleClick =()=>{
+    signInWithPopup(auth,provider).then((data)=>{
+      setValue(data.user.email)
+      localStorage.setItem("email", data.user.email)
+    })
+  }
+
+
+  useEffect(()=>{
+    setValue(localStorage.getItem('email'))
+  })
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     {
+      value?<HomePage></HomePage>:
+      <button onClick={handleClick}>Sing in With Google</button>
+     }
+      
     </div>
   );
 }
