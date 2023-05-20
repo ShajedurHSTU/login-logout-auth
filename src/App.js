@@ -1,35 +1,39 @@
 import logo from './logo.svg';
 import './App.css';
-import React, { useEffect, useState } from "react";
-import {auth, provider} from "./firebase.config";
-import {signInWithPopup} from "firebase/auth";
-import HomePage from './components/HomePage/HomePage';
-
+import React, { useState } from 'react';
+import {auth,provider} from './firebase.config';
+import {signInWithPopup} from 'firebase/auth';
 
 
 function App() {
 
+  const [value, setValue]= useState({
+    isSignedIn: false,
+    name:'',
+    email:'',
+    photo:'',
 
-  const [value, setValue]= useState('');
-  const handleClick =()=>{
-    signInWithPopup(auth,provider).then((data)=>{
-      setValue(data.user.email)
-      localStorage.setItem("email", data.user.email)
+  })
+  const handleClick=()=>{
+    signInWithPopup(auth,provider).then((result)=>{
+      console.log(result.user);
+     const {displayName,email,photoURL}=result.user;
+     console.log(displayName, email, photoURL);
+     const SignedIn={
+      isSignedIn:true,
+      name: displayName,
+      email: email,
+      photo:photoURL,
+     }
+     setValue(SignedIn)
     })
   }
-
-
-  useEffect(()=>{
-    setValue(localStorage.getItem('email'))
-  })
-
   return (
     <div className="App">
-     {
-      value?<HomePage></HomePage>:
-      <button onClick={handleClick}>Sing in With Google</button>
-     }
-      
+      <button onClick={handleClick}>Sign In with Google</button>
+      <h1>{value.name}</h1>
+      <h2>{value.email}</h2>
+      <img src={value.photo}></img>
     </div>
   );
 }
